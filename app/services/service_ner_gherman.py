@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Tuple
 from torch.nn.functional import softmax
 
 class GhermanNer(BaseModelService):
-    def __init__(self):
+    def __init__(self, model_name):
         self.model_name = "Gherman/bert-base-NER-Russian"
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.model = AutoModelForTokenClassification.from_pretrained(self.model_name)

@@ -6,8 +6,8 @@ class BaseModelService(ABC):
     Базовый абстрактный класс для всех моделей.
     Обеспечивает единый интерфейс.
     """
-    def __init__(self, model_path: str, device: str = "cpu"):
-        self.model_path = model_path
+    def __init__(self, model_name: str, device: str = "cpu"):
+        self.model_name = model_name
         self.device = device
         self.model = None
         self._load_model()

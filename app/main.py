@@ -7,14 +7,13 @@ from fastapi import Request
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Загрузка моделей...")
-    app.state.gherman_ner = GhermanNer()
+    app.state.gherman_ner = GhermanNer(model_name = "Gherman/bert-base-NER-Russian")
     print("Все модели готовы!")    
     yield 
 
-
 app = FastAPI(lifespan=lifespan)
 
-@app.get("/ner")
+@app.get("/gherman_ner")
 def extract_address(request: Request, text: str):
     model = request.app.state.gherman_ner
     return model.predict(text)
