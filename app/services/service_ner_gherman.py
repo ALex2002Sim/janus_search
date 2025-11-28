@@ -5,15 +5,16 @@ import re
 from typing import Any, Dict, List, Tuple
 from torch.nn.functional import softmax
 
+
 class GhermanNerService(BaseModelService):
-    def __init__(self, 
-            model_name: str = "Gherman/bert-base-NER-Russian"
-            ):
+    def __init__(self, model_name: str = "Gherman/bert-base-NER-Russian"):
         self.model_name = model_name
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.model = AutoModelForTokenClassification.from_pretrained(self.model_name)
 
-    def _merge_subword_tokens_and_labels(self, tokens: List[str], labels: List[str]) -> List[Tuple[str, str]]:
+    def _merge_subword_tokens_and_labels(
+        self, tokens: List[str], labels: List[str]
+    ) -> List[Tuple[str, str]]:
         """
         Объединяет субтокены (##) и их метки.
         Очищает от мусорных токенов, которые нужны для разметки модели [CLS] [SEP] [PAD]
@@ -47,9 +48,9 @@ class GhermanNerService(BaseModelService):
             return_tensors="pt",
             padding=True,
             truncation=True,
-            return_token_type_ids=False
+            return_token_type_ids=False,
         )
-    
+
     def postprocess(self, tokens: torch.Tensor, logits: torch.Tensor) -> str:
         """Преобразует выход модели в строку адреса."""
         probs = softmax(logits, dim=-1)
@@ -65,7 +66,7 @@ class GhermanNerService(BaseModelService):
             "CITY": "",
             "DISTRICT": "",
             "STREET": "",
-            "HOUSE": ""
+            "HOUSE": "",
         }
 
         for word, label in merged:
@@ -84,7 +85,7 @@ class GhermanNerService(BaseModelService):
 
         with torch.no_grad():
             outputs = self.model(**inputs)
-        
+
         address_str = self.postprocess(inputs["input_ids"], outputs.logits)
 
         return address_str

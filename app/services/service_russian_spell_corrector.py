@@ -13,11 +13,12 @@ class RussianSpellCorrectorService(BaseModelService):
     Наследуется от BaseModelService.
     """
 
-    def __init__(self, 
-        model_name: str = "UrukHan/t5-russian-spell", 
+    def __init__(
+        self,
+        model_name: str = "UrukHan/t5-russian-spell",
         device: str | None = None,
-        max_length: int = 256
-        ):
+        max_length: int = 256,
+    ):
         self.model_name = model_name
         self.max_length = max_length
 
@@ -33,7 +34,7 @@ class RussianSpellCorrectorService(BaseModelService):
         Синхронная загрузка модели и токенайзера.
         (Можно вызвать отдельно для async загрузки в FastAPI)
         """
-        
+
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
         self.model.to(self.device)
@@ -51,7 +52,7 @@ class RussianSpellCorrectorService(BaseModelService):
         """
         Асинхронный вызов model.generate через threadpool.
         """
-        
+
         def _work(tokenizer, model, input_text, gkwargs):
             batch = tokenizer(input_text, return_tensors="pt", padding=True).to(
                 model.device
