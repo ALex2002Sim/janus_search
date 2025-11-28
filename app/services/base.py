@@ -13,11 +13,6 @@ class BaseModelService(ABC):
         self._load_model()
 
     @abstractmethod
-    def _load_model(self) -> None:
-        """Загрузка модели (реализуется в дочерних классах)."""
-        pass
-
-    @abstractmethod
     def preprocess(self, input_data: Any) -> Any:
         """Преобразование входных данных в формат для модели."""
         pass
@@ -28,6 +23,6 @@ class BaseModelService(ABC):
         pass
 
     @abstractmethod
-    def predict(self, input_data: Any) -> Dict[str, Any]:
+    def predict(self, input_data: Any) -> Any:
         """Основной метод: от входа до предсказания."""
         pass
