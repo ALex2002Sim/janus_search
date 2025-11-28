@@ -1,11 +1,9 @@
 from typing import Any, Dict
 import asyncio
 from functools import partial
-
 import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from fastapi.concurrency import run_in_threadpool
-
 from app.services.base import BaseModelService
 
 
@@ -15,22 +13,20 @@ class RussianSpellCorrectorService(BaseModelService):
     Наследуется от BaseModelService.
     """
 
-    def __init__(
-        self,
-        model_path: str = "UrukHan/t5-russian-spell",
+    def __init__(self, 
+        model_name: str = "UrukHan/t5-russian-spell", 
         device: str | None = None,
-        max_length: int = 256,
-        max_concurrency: int = 6,
-    ):
+        max_length: int = 256
+        ):
+        self.model_name = model_name
         self.max_length = max_length
-        self._semaphore = asyncio.Semaphore(max_concurrency)
 
         if device:
             self.device = device
         else:
             self.device = "cuda" if torch.cuda.is_available() else "cpu"
 
-        super().__init__(model_path, self.device)
+        self._load_model()
 
     def _load_model(self) -> None:
         """
@@ -38,8 +34,8 @@ class RussianSpellCorrectorService(BaseModelService):
         (Можно вызвать отдельно для async загрузки в FastAPI)
         """
         
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_path)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(self.model_name)
         self.model.to(self.device)
         self.model.eval()
 
@@ -55,7 +51,7 @@ class RussianSpellCorrectorService(BaseModelService):
         """
         Асинхронный вызов model.generate через threadpool.
         """
-
+        
         def _work(tokenizer, model, input_text, gkwargs):
             batch = tokenizer(input_text, return_tensors="pt", padding=True).to(
                 model.device
@@ -86,6 +82,7 @@ class RussianSpellCorrectorService(BaseModelService):
         Основной метод: от строки до исправленного результата.
         """
         preprocessed = self.preprocess(input_data)
+        self._semaphore = asyncio.Semaphore()
 
         gen_kwargs = {
             "num_beams": num_beams,
@@ -100,7 +97,7 @@ class RussianSpellCorrectorService(BaseModelService):
             raw_output = await self._generate(preprocessed, gen_kwargs)
 
         corrected = self.postprocess(raw_output)
-        return {"original": input_data, "corrected": corrected}
+        return corrected
 
     def predict(self, input_data: str) -> Dict[str, Any]:
         """

@@ -5,9 +5,11 @@ import re
 from typing import Any, Dict, List, Tuple
 from torch.nn.functional import softmax
 
-class GhermanNer(BaseModelService):
-    def __init__(self, model_name):
-        self.model_name = "Gherman/bert-base-NER-Russian"
+class GhermanNerService(BaseModelService):
+    def __init__(self, 
+            model_name: str = "Gherman/bert-base-NER-Russian"
+            ):
+        self.model_name = model_name
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.model = AutoModelForTokenClassification.from_pretrained(self.model_name)
 
@@ -85,11 +87,9 @@ class GhermanNer(BaseModelService):
         
         address_str = self.postprocess(inputs["input_ids"], outputs.logits)
 
-        return {
-            "text": text,
-            "address": address_str
-        }
+        return address_str
+
 
 if __name__ == "__main__":
-    GhMod = GhermanNer()
+    GhMod = GhermanNerService()
     print(GhMod.predict("Ул. Калинина, район Москва купить автомобиль дом 5"))
