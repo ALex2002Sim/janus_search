@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict
 
+
 class BaseModelService(ABC):
     """
     Базовый абстрактный класс для всех моделей.
     Обеспечивает единый интерфейс.
     """
+
     def __init__(self, model_path: str, device: str = "cpu"):
         self.model_path = model_path
         self.device = device
