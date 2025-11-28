@@ -15,19 +15,19 @@ class BaseModelService(ABC):
     @abstractmethod
     def _load_model(self) -> None:
         """Загрузка модели (реализуется в дочерних классах)."""
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def preprocess(self, input_data: Any) -> Any:
         """Преобразование входных данных в формат для модели."""
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def postprocess(self, raw_output: Any) -> Any:
         """Преобразование выхода модели в человеко-читаемый формат."""
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def predict(self, input_data: Any) -> Dict[str, Any]:
         """Основной метод: от входа до предсказания."""
-        pass
+        raise NotImplementedError
