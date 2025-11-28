@@ -8,3 +8,5 @@
 
 !routers - роутеры, пока можно не использовать, но вдруг пригодится, го пока что
 все эндпоинты в main.py писать.
+
+- Запуск uvicorn app.main:app --host localhost --port 8000 --reload
