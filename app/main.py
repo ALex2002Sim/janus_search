@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter
 import uvicorn
 from app.services.service_ner_gherman import GhermanNerService
 from app.services.service_russian_spell_corrector import RussianSpellCorrectorService
-from app.services.service_qdrant import AddressDB
+from app.services.service_qdrant import QdrantDB
 from contextlib import asynccontextmanager
 from fastapi import Request
 
@@ -12,7 +12,7 @@ async def lifespan(app: FastAPI):
     print("Загрузка моделей...")
     app.state.gherman_ner = GhermanNerService()
     app.state.ru_sp_corrector = RussianSpellCorrectorService()
-    app.state.qdrant_client = AddressDB()
+    app.state.qdrant_client = QdrantDB()
     print("Все модели готовы!")
     yield
 
@@ -40,8 +40,8 @@ def classify_text(request: Request, text: str):
     cor_text = model_cor.predict(text)
     ner_text = model_ner.predict(cor_text)
     results = qdrant_conn.search_address(query=ner_text)
-    # for p in results:
-    #     print(f"{p.payload}\n{p.score}\n")
+    for p in results:
+        print(f"{p.payload}\n{p.score}\n")
     return {"input_text": text, "processed_text": results[0].payload["address"]}
 
 

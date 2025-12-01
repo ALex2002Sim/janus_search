@@ -1,11 +1,11 @@
 import re
 from typing import List
 from qdrant_client import QdrantClient
-from qdrant_client.models import VectorParams, Distance, QueryRequest
+from qdrant_client.models import VectorParams, Distance
 from sentence_transformers import SentenceTransformer
 
 
-class AddressDB:
+class QdrantDB:
     def __init__(
         self,
         host="localhost",
@@ -98,4 +98,4 @@ if __name__ == "__main__":
 
     with open("address.json", "r", encoding="utf-8") as f:
         loaded_items = json.load(f)
-    db = AddressDB(collection_name="addresses", data=loaded_items, timeout=300)
+    db = QdrantDB(collection_name="addresses", data=loaded_items, timeout=300)
