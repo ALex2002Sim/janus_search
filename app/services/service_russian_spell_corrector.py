@@ -32,7 +32,7 @@ class RussianSpellCorrectorService(BaseModelService):
             raise ValueError("Input must be a string")
         return input_data.strip()
 
-    async def _generate_async(self, text: str, gen_kwargs: dict) -> str:
+    async def _generate_async(self, text: str, gen_kwargs: Dict[str, Any]) -> str:
         def _generate(tokenizer, model, inp, kwargs):
             batch = tokenizer(inp, return_tensors="pt", padding=True).to(model.device)
             out = model.generate(**batch, **kwargs)
