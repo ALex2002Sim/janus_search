@@ -12,7 +12,7 @@ async def lifespan(app: FastAPI):
     print("Загрузка моделей...")
     app.state.gherman_ner = GhermanNerService()
     app.state.ru_sp_corrector = RussianSpellCorrectorService()
-    app.state.qdrant_client = QdrantDB()
+    app.state.qdrant_client = QdrantDB(collection_name="cleaned_addresses")
     print("Все модели готовы!")
     yield
 

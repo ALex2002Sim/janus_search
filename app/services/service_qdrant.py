@@ -19,7 +19,8 @@ class QdrantDB:
         self.client = QdrantClient(host=host, port=port, timeout=timeout)
         self.collection_name = collection_name
         self.vector_size = vector_size
-        self.model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        # self.model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+        self.model = SentenceTransformer("ai-forever/sbert_large_nlu_ru")
         self.batch_size = batch_size
 
         collections = [c.name for c in self.client.get_collections().collections]
@@ -96,6 +97,6 @@ class QdrantDB:
 if __name__ == "__main__":
     import json
 
-    with open("address.json", "r", encoding="utf-8") as f:
+    with open("address_cleaned.json", "r", encoding="utf-8") as f:
         loaded_items = json.load(f)
-    db = QdrantDB(collection_name="addresses", data=loaded_items, timeout=300)
+    db = QdrantDB(collection_name="cleaned_addresses", data=loaded_items, timeout=300)
