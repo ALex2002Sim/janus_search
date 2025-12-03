@@ -14,10 +14,11 @@ class RussianSpellCorrectorService(BaseModelService):
         self,
         model_name: str = "UrukHan/t5-russian-spell",
         device: str | None = None,
-        max_length: int = 256,
+        max_length: int = 256
     ):
         self.max_length = max_length
-        device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        # device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        device = "cpu"
 
         super().__init__(model_name=model_name, device=device)
 
@@ -30,7 +31,7 @@ class RussianSpellCorrectorService(BaseModelService):
     def preprocess(self, input_data: str) -> str:
         if not isinstance(input_data, str):
             raise ValueError("Input must be a string")
-        return input_data.strip()
+        return f"Spell correct: {input_data.strip()}"
 
     async def _generate_async(self, text: str, gen_kwargs: Dict[str, Any]) -> str:
         def _generate(tokenizer, model, inp, kwargs):
@@ -48,10 +49,20 @@ class RussianSpellCorrectorService(BaseModelService):
     async def predict_async(self, text: str) -> str:
         pre = self.preprocess(text)
 
-        gen_kwargs = {"max_length": self.max_length, "num_beams": 4}
+        gen_kwargs = {"max_length": self.max_length}
 
         raw = await self._generate_async(pre, gen_kwargs)
         return self.postprocess(raw)
 
     def predict(self, input_data: str) -> str:
         return asyncio.run(self.predict_async(input_data))
+
+
+async def main():
+    obj = RussianSpellCorrectorService()
+    print(await obj.predict_async("волгогра"))
+
+if __name__ == "__main__":
+    import asyncio
+
+    asyncio.run(main())

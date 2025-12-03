@@ -37,12 +37,24 @@ def classify_text(request: Request, text: str):
     model_cor = request.app.state.ru_sp_corrector
     model_ner = request.app.state.gherman_ner
     qdrant_conn = request.app.state.qdrant_client
+
+    print(f"Ввод пользователя: {text}\n")
+
     cor_text = model_cor.predict(text)
+    print(f"Ввод пользователя после исправления ошибок: {cor_text}\n")
+
     ner_text = model_ner.predict(cor_text)
+    print(f"Вывод NER: {ner_text}\n")
+
+    if not ner_text:
+        ner_text = cor_text
+
+    print(f"Результаты из бд")
     results = qdrant_conn.search_address(query=ner_text)
     for p in results:
         print(f"{p.payload}\n{p.score}\n")
-    return {"input_text": text, "processed_text": results[0].payload["address"]}
+
+    return {"input_text": text, "processed_text": results[0].payload["raw_address"]}
 
 
 if __name__ == "__main__":
