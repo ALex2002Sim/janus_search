@@ -11,7 +11,7 @@ from app.services.base import BaseModelService
 
 class RussianSpellCorrectorService(BaseModelService):
     def __init__(
-        self,
+        self, 
         model_name: str = "UrukHan/t5-russian-spell",
         device: str | None = None,
         max_length: int = 256
